@@ -5,12 +5,42 @@
   <title>Tetris of Code</title>
   
 <style type="text/css">
+#project-info {
+  margin-bottom: 20px;
+}
+#project-info img {
+  display: block;
+  margin-bottom: 10px;
+}
 </style>
 </head>
-<body onload="tetris.play('scene')" onkeydown="tetris.handleKey(event)">
+<body onload="init(); tetris.play('scene')" onkeydown="tetris.handleKey(event)">
+
+<div id="project-info">
+  <img id="project-image" src="" alt="Project display image" style="max-width:300px;">
+  <h1 id="project-title"></h1>
+  <p id="project-desc"></p>
+</div>
 
 <script src="jquery.js"></script>
 <script>
+
+// load project metadata from ProjectsDisplay.json and populate page
+function init() {
+    fetch('../ProjectsDisplay.json')
+        .then(function(resp){ return resp.json(); })
+        .then(function(data){
+            var page = location.pathname.split('/').pop().replace('.html','');
+            var project = data.find(function(p){ return p.id === page; });
+            if (!project && data.length>0) project = data[0];
+            if (project) {
+                document.getElementById('project-image').src = project.image;
+                document.getElementById('project-title').textContent = project.title;
+                document.getElementById('project-desc').textContent = project.description;
+            }
+        })
+        .catch(function(err){ console.error('could not load project info', err); });
+}
 
 score = 0;
 
